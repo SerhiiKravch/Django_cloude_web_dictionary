@@ -1,0 +1,32 @@
+{% extends "dictionary/base.html" %}
+
+{% block title %}{{ word.english_word }}{% endblock %}
+
+{% block content %}
+  <h1>{{ word.english_word }}</h1>
+
+  <table>
+    <tbody>
+      <tr>
+        <th>Transcription</th>
+        <td>{{ word.transcription }}</td>
+      </tr>
+      <tr>
+        <th>Ukrainian translation</th>
+        <td>{{ word.ukrainian_translation }}</td>
+      </tr>
+      <tr>
+        <th>Context sentence</th>
+        <td>{{ word.context_sentence }}</td>
+      </tr>
+      <tr>
+        <th>Origin</th>
+        <td>{{ word.origin }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 1rem;">
+    <a class="btn" href="{% url 'dictionary:word_list' %}">Back to main page</a>
+  </p>
+{% endblock %}

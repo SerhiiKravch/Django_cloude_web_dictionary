@@ -1,0 +1,41 @@
+{% extends "dictionary/base.html" %}
+
+{% block title %}Dictionary{% endblock %}
+
+{% block content %}
+  <h1>English to Ukrainian Dictionary</h1>
+  <p class="muted">Browse saved words or add an unknown English word to get translation, transcription, and context.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      {{ form.word }}
+      <button type="submit">Find word</button>
+    </div>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Word</th>
+        <th>Transcription</th>
+        <th>Ukrainian translation</th>
+        <th>Context sentence</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for word in words %}
+        <tr>
+          <td><a class="word-link" href="{{ word.get_absolute_url }}">{{ word.english_word }}</a></td>
+          <td>{{ word.transcription }}</td>
+          <td>{{ word.ukrainian_translation }}</td>
+          <td>{{ word.context_sentence }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4" class="muted">No words yet. Add your first word above.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

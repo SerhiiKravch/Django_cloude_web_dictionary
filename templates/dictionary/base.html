@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}English-Ukrainian Dictionary{% endblock %}</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #f4f7fb;
+      color: #132238;
+    }
+    .container {
+      width: min(980px, 92vw);
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.08);
+      padding: 1.5rem;
+    }
+    h1, h2 {
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border-bottom: 1px solid #e6edf7;
+      padding: 0.7rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f7faff;
+    }
+    .form-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    input[type="text"] {
+      flex: 1;
+      min-width: 230px;
+      border: 1px solid #bfd0e5;
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.95rem;
+    }
+    button, .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      background: #0f5cb3;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-block;
+    }
+    .messages {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+    .messages li {
+      padding: 0.7rem;
+      border-radius: 8px;
+      background: #fff2f2;
+      color: #8a1f1f;
+      border: 1px solid #ffd0d0;
+      margin-bottom: 0.5rem;
+    }
+    .muted {
+      color: #516680;
+    }
+    .word-link {
+      color: #0f5cb3;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
