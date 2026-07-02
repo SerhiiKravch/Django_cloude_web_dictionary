@@ -4,6 +4,15 @@
 
 {% block content %}
   <h1>{{ word.english_word }}</h1>
+  <p>
+    <span class="direction-pill">
+      {% if word.source_language == "uk" %}🇺🇦{% else %}🇬🇧{% endif %}
+      {{ word.source_language|upper }}
+      →
+      {% if word.target_language == "uk" %}🇺🇦{% else %}🇬🇧{% endif %}
+      {{ word.target_language|upper }}
+    </span>
+  </p>
 
   <table>
     <tbody>
@@ -12,8 +21,28 @@
         <td>{{ word.transcription }}</td>
       </tr>
       <tr>
-        <th>Ukrainian translation</th>
+        <th>Primary translation</th>
         <td>{{ word.ukrainian_translation }}</td>
+      </tr>
+      <tr>
+        <th>Translation options</th>
+        <td>
+          {% if word.translation_options.all %}
+            <ul class="option-list">
+              {% for option in word.translation_options.all %}
+                <li>
+                  <span class="option-text">{{ option.text }}</span>
+                  <span class="pos-badge pos-{{ option.part_of_speech }}">{{ option.part_of_speech|upper }}</span>
+                  {% if option.usage_note %}
+                    <span class="usage-note">{{ option.usage_note }}</span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <span>No options yet.</span>
+          {% endif %}
+        </td>
       </tr>
       <tr>
         <th>Context sentence</th>

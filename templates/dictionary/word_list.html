@@ -3,13 +3,15 @@
 {% block title %}Dictionary{% endblock %}
 
 {% block content %}
-  <h1>English to Ukrainian Dictionary</h1>
-  <p class="muted">Browse saved words or add an unknown English word to get translation, transcription, and context.</p>
+  <h1>Ukrainian-English Dictionary</h1>
+  <p class="muted">Choose translation direction, enter a word, and get multiple translation options with part of speech.</p>
 
   <form method="post">
     {% csrf_token %}
     <div class="form-row">
+      {{ form.direction }}
       {{ form.word }}
+      <datalist id="word-suggestions"></datalist>
       <button type="submit">Find word</button>
     </div>
   </form>
@@ -17,25 +19,86 @@
   <table>
     <thead>
       <tr>
+        <th>Direction</th>
         <th>Word</th>
         <th>Transcription</th>
-        <th>Ukrainian translation</th>
+        <th>Primary translation</th>
         <th>Context sentence</th>
       </tr>
     </thead>
     <tbody>
       {% for word in words %}
         <tr>
+          <td>
+            <span class="direction-pill">
+              {% if word.source_language == "uk" %}🇺🇦{% else %}🇬🇧{% endif %}
+              {{ word.source_language|upper }}
+              →
+              {% if word.target_language == "uk" %}🇺🇦{% else %}🇬🇧{% endif %}
+              {{ word.target_language|upper }}
+            </span>
+          </td>
           <td><a class="word-link" href="{{ word.get_absolute_url }}">{{ word.english_word }}</a></td>
           <td>{{ word.transcription }}</td>
-          <td>{{ word.ukrainian_translation }}</td>
+          <td>
+            {{ word.ukrainian_translation }}
+            {% with primary=word.translation_options.first %}
+              {% if primary %}
+                <span class="pos-badge pos-{{ primary.part_of_speech }}">{{ primary.part_of_speech|upper }}</span>
+              {% endif %}
+            {% endwith %}
+          </td>
           <td>{{ word.context_sentence }}</td>
         </tr>
       {% empty %}
         <tr>
-          <td colspan="4" class="muted">No words yet. Add your first word above.</td>
+          <td colspan="5" class="muted">No words yet. Add your first word above.</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  <script>
+    (function () {
+      const input = document.getElementById("id_word");
+      const direction = document.getElementById("id_direction");
+      if (!input) return;
+
+      input.setAttribute("list", "word-suggestions");
+      const dataList = document.getElementById("word-suggestions");
+      let controller = null;
+
+      input.addEventListener("input", async function () {
+        const query = input.value.trim();
+        if (query.length < 2) {
+          dataList.innerHTML = "";
+          return;
+        }
+
+        if (controller) controller.abort();
+        controller = new AbortController();
+
+        try {
+          const response = await fetch(
+            "{% url 'dictionary:autocomplete_words' %}?q=" + encodeURIComponent(query) +
+              "&source_language=" + encodeURIComponent((direction.value || "en:uk").split(":")[0]),
+            { signal: controller.signal }
+          );
+          if (!response.ok) return;
+
+          const payload = await response.json();
+          dataList.innerHTML = "";
+          (payload.results || []).forEach(function (word) {
+            const option = document.createElement("option");
+            option.value = word;
+            dataList.appendChild(option);
+          });
+        } catch (error) {
+          if (error.name !== "AbortError") {
+            dataList.innerHTML = "";
+          }
+        }
+      });
+    })();
+  </script>
 {% endblock %}
